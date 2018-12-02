@@ -2,12 +2,24 @@ package nl.dutchland.sudoku
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class MatrixTest {
 
     @Test
-    fun testMinimumMatrixSize() {
+    fun testMinimumMatrixSize_Horizontal() {
+        val message = assertFailsWith<AssertionError> { Matrix.of(0, 1) { b -> b } }
+                .message
 
+        assertEquals("Matrix must have positive horizontal size: 0", message)
+    }
+
+    @Test
+    fun testMinimumMatrixSize_Vertical() {
+        val message = assertFailsWith<AssertionError> { Matrix.of(1, 0) { b -> b } }
+                .message
+
+        assertEquals("Matrix must have positive vertical size: 0", message)
     }
 
     @Test

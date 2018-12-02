@@ -16,6 +16,7 @@ class Matrix<T> private constructor(
     val cells : Collection<T> = array
 
     val columns : List<List<T>> get() {
+        println("Calculating columns")
         return (0 until horizontalSize)
                 .map { columnIndex -> getColumn(columnIndex) }
     }
@@ -26,9 +27,11 @@ class Matrix<T> private constructor(
     }
     companion object {
         fun <T> of(horizontalSize : Int, verticalSize: Int, producer: (Coordinate) -> T) : Matrix<T> {
+            assert(horizontalSize > 0, {"Matrix must have positive horizontal size: $horizontalSize"})
+            assert(verticalSize > 0, {"Matrix must have positive vertical size: $verticalSize"})
+
             return Matrix(horizontalSize, verticalSize, producer)
         }
-
     }
 
     private fun coordinatesForColumn(columnIndex: Int) : List<Coordinate> {

@@ -1,12 +1,21 @@
 package nl.dutchland.sudoku
 
-
 class Matrix<T> private constructor(
         val horizontalSize : Int,
         val verticalSize: Int,
-        private val producer: (Coordinate) -> T) {
+        producer: (Coordinate) -> T) {
+
+    companion object {
+        fun <T> of(horizontalSize : Int, verticalSize: Int, producer: (Coordinate) -> T) : Matrix<T> {
+            assert(horizontalSize > 0) {"Matrix must have positive horizontal size: $horizontalSize"}
+            assert(verticalSize > 0) {"Matrix must have positive vertical size: $verticalSize"}
+
+            return Matrix(horizontalSize, verticalSize, producer)
+        }
+    }
 
     private val array : List<T>
+
     init {
         array = (0 until horizontalSize)
                 .flatMap { columnIndex -> coordinatesForColumn(columnIndex) }
@@ -25,14 +34,6 @@ class Matrix<T> private constructor(
         return (0 until verticalSize)
                 .map { rowIndex -> getRow(rowIndex) }
     }
-    companion object {
-        fun <T> of(horizontalSize : Int, verticalSize: Int, producer: (Coordinate) -> T) : Matrix<T> {
-            assert(horizontalSize > 0, {"Matrix must have positive horizontal size: $horizontalSize"})
-            assert(verticalSize > 0, {"Matrix must have positive vertical size: $verticalSize"})
-
-            return Matrix(horizontalSize, verticalSize, producer)
-        }
-    }
 
     private fun coordinatesForColumn(columnIndex: Int) : List<Coordinate> {
         return (0 until verticalSize)
@@ -43,7 +44,6 @@ class Matrix<T> private constructor(
         return (0 until horizontalSize)
                 .map { columnIndex -> Coordinate(columnIndex, rowIndex) }
                 .map { coordinate -> valueAt(coordinate) }
-
     }
 
     fun getColumn(columnIndex: Int) : List<T> {
@@ -53,20 +53,26 @@ class Matrix<T> private constructor(
     }
 
     fun valueAt(coordinate: Coordinate) : T {
-        val indexInArray = calculateIndex(coordinate);
-        return array.get(indexInArray)
-    }
+        assert(isWithinMatrix(coordinate)) {"Coordinate is not within matrix. Matix size: $horizontalSize by $verticalSize"}
 
-    private fun calculateIndex(coordinate: Coordinate): Int {
-        val multiplier = coordinate.colunmIndex
-        val adder = coordinate.rowIndex
-
-        return multiplier * (verticalSize) + adder
+        val indexInArray = calculateIndexInArray(coordinate)
+        return array[indexInArray]
     }
 
     fun subMatrix(topLeft: Coordinate, bottomRigh: Coordinate): Matrix<T> {
         val horizontalSize = bottomRigh.colunmIndex - topLeft.colunmIndex + 1
         val verticalSize = bottomRigh.rowIndex - topLeft.colunmIndex + 1
         return Matrix(horizontalSize, verticalSize) { coordinate -> valueAt(coordinate.sum(topLeft)) }
+    }
+
+    private fun isWithinMatrix(coordinate: Coordinate): Boolean {
+        return coordinate.colunmIndex < horizontalSize && coordinate.rowIndex < verticalSize
+    }
+
+    private fun calculateIndexInArray(coordinate: Coordinate): Int {
+        val multiplier = coordinate.colunmIndex
+        val adder = coordinate.rowIndex
+
+        return multiplier * (verticalSize) + adder
     }
 }

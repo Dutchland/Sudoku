@@ -1,7 +1,7 @@
 package nl.dutchland.sudoku
 
-class Square() {
-    private val neighbours: MutableSet<Square> = HashSet();
+class Square {
+    private val neighbours: MutableSet<Square> = HashSet()
 
     var possibleValues: Set<Int> = (1 until 10).toSet()
         private set
@@ -25,8 +25,7 @@ class Square() {
 
     private fun retrieveNeigbourValues(): Set<Int> {
         return neighbours
-                .map { n -> n.value }
-                .filterNotNull()
+                .mapNotNull { n -> n.value }
                 .toSet()
     }
 }

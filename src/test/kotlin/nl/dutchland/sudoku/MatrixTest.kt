@@ -23,6 +23,19 @@ class MatrixTest {
     }
 
     @Test
+    fun testValueAt_Exceeds_Matrix_Size() {
+        val matrix = Matrix.of(2,2) { c -> c}
+
+        val message1 = assertFailsWith<AssertionError> { matrix.valueAt(Coordinate(2, 1)) }
+                .message
+        assertEquals("Coordinate is not within matrix. Matix size: 2 by 2", message1)
+
+        val message2 = assertFailsWith<AssertionError> { matrix.valueAt(Coordinate(1, 2)) }
+                .message
+        assertEquals("Coordinate is not within matrix. Matix size: 2 by 2", message2)
+    }
+
+    @Test
     fun testGetValues() {
         // Test 1
         val matrix = Matrix.of(10,3) { c -> c}
